@@ -46,12 +46,24 @@ class PlayerNotifier extends StateNotifier<PlayerState> {
     state = state.copyWith(readyPlayer: readyPlayer);
   }
 
-  void changePhoto(PlayerPhoto playerPhoto) {
+  void changeReadyPhoto(PlayerPhoto playerPhoto) {
     if (playerPhoto.path == null) return;
 
     final readyPlayer = state.readyPlayer.copyWith(playerPhoto: playerPhoto);
 
     state = state.copyWith(readyPlayer: readyPlayer);
+  }
+
+  void changePlayerPhoto(int playerId, PlayerPhoto newPhoto) {
+    if (newPhoto.path == null) return;
+
+    final copiedPlayers = {...state.players};
+    copiedPlayers.update(
+      playerId,
+      (p) => p.copyWith(playerPhoto: newPhoto),
+    );
+
+    state = state.copyWith(players: copiedPlayers);
   }
 
   void changePhotoToAsset() {

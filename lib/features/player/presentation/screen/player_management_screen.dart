@@ -19,20 +19,7 @@ class PlayerManagementScreen extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.all(24),
           children: [
-            Consumer(
-              builder: (context, ref, child) {
-                final playerPhoto = ref.watch(
-                  playerProvider.select(
-                    (state) => state.players[playerId]!.playerPhoto,
-                  ),
-                );
-
-                return CircleAvatar(
-                  radius: 30,
-                  child: PlayerAvatar(playerPhoto),
-                );
-              },
-            ),
+            PlayerProfileAvatar(playerId),
 
             Consumer(
               builder: (context, ref, child) {
@@ -72,13 +59,16 @@ class PlayerManagementScreen extends StatelessWidget {
                       ),
                     );
 
+                    final progress = totalDuration.inMilliseconds <= 0
+                        ? 0.0
+                        : remainingTime.inMilliseconds /
+                              totalDuration.inMilliseconds;
+
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         LinearProgressIndicator(
-                          value:
-                              remainingTime.inMilliseconds /
-                              totalDuration.inMilliseconds,
+                          value: progress.clamp(0.0, 1.0),
                         ),
 
                         Text(

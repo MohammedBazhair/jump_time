@@ -3,64 +3,64 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../core/presentation/widget/conditional_builder.dart';
 import '../../../domain/entities/player_photo/photo_source.dart';
-import '../../../domain/entities/player_photo/player_photo.dart';
+import '../../controller/player_controller.dart';
 import '../../helpers/helpers.dart';
 
-class PlayerAvatar extends ConsumerWidget {
-  const PlayerAvatar(this.playerPhoto, {super.key});
+class PlayerProfileAvatar extends StatelessWidget {
+  const PlayerProfileAvatar(this.playerId, {super.key});
 
-  final PlayerPhoto playerPhoto;
-  @override
-  Widget build(BuildContext context,ref) {
-    final photoWidget = switch (playerPhoto.photoSource) {
-      PhotoSource.asset => const _DefaultAsset(),
-      PhotoSource.picked => _PickedPhoto(playerPhoto.path),
-    };
-
-    return Stack(children: [photoWidget,PickPhotoButton(ref)]);
-  }
-}
-
-class _DefaultAsset extends StatelessWidget {
-  const _DefaultAsset();
-
+  final int playerId;
   @override
   Widget build(BuildContext context) {
-    return Image.asset('assets/images/boy_jumping.jpg', fit: BoxFit.cover);
-  }
-}
-
-class _PickedPhoto extends StatelessWidget {
-  const _PickedPhoto(this.pickedImagePath);
-  final String? pickedImagePath;
-
-  @override
-  Widget build(BuildContext context) {
-    return ConditionalBuilder(
-      condition: pickedImagePath != null,
-      builder: (_) => Image.file(
-        File(pickedImagePath!),
-        fit: BoxFit.fill,
-        errorBuilder: (context, error, stackTrace) => const _DefaultAsset(),
-      ),
-      fallback: (_) => const _DefaultAsset(),
+    return Stack(
+      children: [
+        PlayerAvatarImage(playerId),
+        PlayerPhotoPickerButton(playerId),
+      ],
     );
   }
 }
 
-class PickPhotoButton extends StatelessWidget {
-  const PickPhotoButton(this.ref, {super.key});
-  final WidgetRef ref;
+class PlayerAvatarImage extends ConsumerWidget {
+  const PlayerAvatarImage(this.playerId, {super.key});
+
+  final int playerId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final playerPhoto = ref.watch(
+      playerProvider.select((state) => state.players[playerId]!.playerPhoto),
+    );
+
+    final imageProvider = switch (playerPhoto.photoSource) {
+      PhotoSource.asset => Image.asset('assets/images/boy_jumping.jpg').image,
+      PhotoSource.picked => Image.file(File(playerPhoto.path!)).image,
+    };
+
+    return CircleAvatar(radius: 35, backgroundImage: imageProvider);
+  }
+}
+
+class PlayerPhotoPickerButton extends StatelessWidget {
+  const PlayerPhotoPickerButton(this.playerId, {super.key});
+  final int playerId;
 
   @override
   Widget build(BuildContext context) {
     return CircleAvatar(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      child: IconButton(
-        onPressed: () => pickCameraImage(ref),
-        icon: const Icon(Icons.add_a_photo,size: 15,),
+      child: Consumer(
+        builder: (_, ref, __) {
+          return IconButton(
+            onPressed: () async {
+              final playerImage = await pickCameraImage();
+              final controller = ref.read(playerProvider.notifier);
+              controller.changePlayerPhoto(playerId, playerImage);
+            },
+            icon: const Icon(Icons.add_a_photo, size: 15),
+          );
+        },
       ),
     );
   }

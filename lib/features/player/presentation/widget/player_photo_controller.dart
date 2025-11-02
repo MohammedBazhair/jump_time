@@ -8,8 +8,6 @@ import 'build_player_photo.dart';
 class PlayerPhotoController extends ConsumerWidget {
   const PlayerPhotoController({super.key});
 
- 
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final playerPhoto = ref.watch(
@@ -28,7 +26,11 @@ class PlayerPhotoController extends ConsumerWidget {
             icon: const Icon(Icons.camera_enhance_sharp),
             backgroundColor: const Color(0xFFE7EEF4).withOpacity(.5),
             foregroundColor: const Color(0xFF000000),
-            onPressed: () => pickCameraImage(ref),
+            onPressed: () async {
+              final pickedPhoto = await pickCameraImage();
+              final controller = ref.read(playerProvider.notifier);
+              controller.changeReadyPhoto(pickedPhoto);
+            },
           ),
         ),
       ],
