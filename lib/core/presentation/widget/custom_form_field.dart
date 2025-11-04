@@ -13,6 +13,7 @@ class CustomFormField extends StatelessWidget {
     this.textInputType,
     this.inputFormatters,
     this.helperText,
+    this.textInputAction,
   });
 
   final TextEditingController controller;
@@ -22,7 +23,7 @@ class CustomFormField extends StatelessWidget {
   final TextInputType? textInputType;
   final List<TextInputFormatter>? inputFormatters;
   final String? helperText;
-
+final TextInputAction? textInputAction;
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -36,7 +37,7 @@ class CustomFormField extends StatelessWidget {
         hintText: hintText,
         helperText: helperText ?? ' ',
       ),
-
+      textInputAction: textInputAction ,
       validator: validator,
       keyboardType: textInputType,
 

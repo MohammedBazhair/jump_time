@@ -10,15 +10,22 @@ extension Numbers on String {
 
 extension DurationFormat on Duration {
   String get format {
-    // final hours = inHours.toString().length < 2 ? '0$inHours' : '$inHours';
-    // final minutes = inMinutes.toString().length < 2
-    //     ? '0$inMinutes'
-    //     : '$inMinutes';
-    // final seconds = inSeconds.toString().length < 2
-    //     ? '0$inSeconds'
-    //     : '$inSeconds';
-    // return '$hours:$minutes:$seconds';
     final parts = toString().split('.');
    return parts.first;
+  }
+}
+
+
+extension ListSpacing on List<Widget> {
+  List<Widget> withSpacing(double spacing) {
+    if (isEmpty) return this;
+    final spacedList = <Widget>[];
+    for (var i = 0; i < length; i++) {
+      spacedList.add(this[i]);
+      if (i < length - 1) {
+        spacedList.add(SizedBox(height: spacing));
+      }
+    }
+    return spacedList;
   }
 }

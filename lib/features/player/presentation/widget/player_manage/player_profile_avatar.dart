@@ -6,13 +6,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../domain/entities/player_photo/photo_source.dart';
 import '../../controller/player_controller.dart';
 import '../../helpers/helpers.dart';
+import '../inherited_widget/player_id_provider.dart';
 
 class PlayerProfileAvatar extends ConsumerWidget {
-  const PlayerProfileAvatar(this.playerId, {super.key});
+  const PlayerProfileAvatar({super.key});
 
-  final int playerId;
   @override
   Widget build(BuildContext context, ref) {
+    final playerId = PlayerIdProvider.of(context).playerId;
     return Column(
       spacing: 10,
       children: [
@@ -22,26 +23,26 @@ class PlayerProfileAvatar extends ConsumerWidget {
             final controller = ref.read(playerProvider.notifier);
             controller.changePlayerPhoto(playerId, playerImage);
           },
-          child: Stack(
+          child: const Stack(
             children: [
-              PlayerAvatarImage(playerId),
-              Positioned(bottom: 5, right: 5, child: PhotoPickerIcon(playerId)),
+              PlayerAvatarImage(),
+              Positioned(bottom: 5, right: 5, child: PhotoPickerIcon()),
             ],
           ),
         ),
-        BuildPlayerName(playerId),
+        const BuildPlayerName(),
       ],
     );
   }
 }
 
 class PlayerAvatarImage extends ConsumerWidget {
-  const PlayerAvatarImage(this.playerId, {super.key});
-
-  final int playerId;
+  const PlayerAvatarImage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final playerId = PlayerIdProvider.of(context).playerId;
+
     final playerPhoto = ref.watch(
       playerProvider.select((state) => state.players[playerId]!.playerPhoto),
     );
@@ -56,8 +57,7 @@ class PlayerAvatarImage extends ConsumerWidget {
 }
 
 class PhotoPickerIcon extends StatelessWidget {
-  const PhotoPickerIcon(this.playerId, {super.key});
-  final int playerId;
+  const PhotoPickerIcon({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -70,11 +70,12 @@ class PhotoPickerIcon extends StatelessWidget {
 }
 
 class BuildPlayerName extends ConsumerWidget {
-  const BuildPlayerName(this.playerId, {super.key});
-  final int playerId;
+  const BuildPlayerName({super.key});
 
   @override
   Widget build(BuildContext context, ref) {
+    final playerId = PlayerIdProvider.of(context).playerId;
+
     final playerName = ref.watch(
       playerProvider.select((state) => state.players[playerId]!.name),
     );
@@ -82,7 +83,7 @@ class BuildPlayerName extends ConsumerWidget {
     return Text(
       playerName,
       textAlign: TextAlign.center,
-      style: const TextStyle(fontSize:18, fontWeight: FontWeight.bold),
+      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
     );
   }
 }

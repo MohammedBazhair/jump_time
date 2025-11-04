@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../features/player/presentation/screen/add_player_screen.dart';
 import '../../features/player/presentation/screen/extend_time_screen.dart';
 import '../../features/player/presentation/screen/player_management_screen.dart';
+import '../../features/player/presentation/widget/inherited_widget/player_id_provider.dart';
 import '../presentation/screen/home_layout_screen.dart';
 
 class AppRoutes {
@@ -12,7 +13,10 @@ class AppRoutes {
     ViewRoute.addPlayer.routeName: (_) => const AddPlayerScreen(),
     ViewRoute.playerManagement.routeName: (context) {
       final playerId = ModalRoute.of(context)?.settings.arguments as int;
-      return PlayerManagementScreen(playerId);
+      return PlayerIdProvider(
+        playerId: playerId,
+        child: const PlayerManagementScreen(),
+      );
     },
     ViewRoute.extendTime.routeName: (context) {
       final playerId = ModalRoute.of(context)?.settings.arguments as int;

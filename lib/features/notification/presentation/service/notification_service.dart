@@ -21,6 +21,7 @@ class NotificationService {
       title: params.msg,
       label: '',
       mode: NotificationMode.auto,
+      duration: const Duration(seconds: 1),
       type: params.type.type,
     );
   }

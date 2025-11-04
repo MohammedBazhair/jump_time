@@ -8,6 +8,7 @@ import '../../../notification/domain/entities/snackbar_params.dart';
 import '../../../notification/presentation/service/notification_service.dart';
 import '../../domain/entities/player_entity.dart';
 import '../../domain/entities/player_photo/player_photo.dart';
+import '../../domain/entities/player_status.dart';
 import '../../domain/entities/playing_method.dart';
 import '../../domain/entities/time_extend_entity.dart';
 import 'player_state.dart';
@@ -61,6 +62,16 @@ class PlayerNotifier extends StateNotifier<PlayerState> {
     copiedPlayers.update(
       playerId,
       (p) => p.copyWith(playerPhoto: newPhoto),
+    );
+
+    state = state.copyWith(players: copiedPlayers);
+  }
+
+  void changePlayerStatus(int playerId, PlayerStatus newStatus) {
+    final copiedPlayers = {...state.players};
+    copiedPlayers.update(
+      playerId,
+      (p) => p.copyWith(playerState: newStatus),
     );
 
     state = state.copyWith(players: copiedPlayers);

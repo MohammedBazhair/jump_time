@@ -6,14 +6,14 @@ import '../../../../../core/routes/app_routes.dart';
 import '../../../domain/entities/player_photo/player_photo.dart';
 import '../../controller/player_controller.dart';
 import '../build_player_photo.dart';
+import '../inherited_widget/player_id_provider.dart';
 
 class PlayerCardHeader extends StatelessWidget {
-  const PlayerCardHeader({super.key, required this.playerId});
-
-  final int playerId;
+  const PlayerCardHeader({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final playerId = PlayerIdProvider.of(context).playerId;
     return SizedBox(
       height: 200,
       child: Stack(
