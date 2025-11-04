@@ -2,20 +2,21 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/presentation/widget/custom_form_field.dart';
 import '../../validators/validators.dart';
+import '../inherited_widget/player_controllers_provider.dart';
 
 
 class PlayingTimeFormField extends StatelessWidget {
   const PlayingTimeFormField({
     super.key,
-    required this.playingTimeController,
-    required this.currentTab,
   });
 
-  final TextEditingController playingTimeController;
-  final int currentTab;
 
   @override
   Widget build(BuildContext context) {
+     final formProvider = PlayerFormProvider.of(context);
+    final playingTimeController = formProvider.playingTimeController;
+    final currentTab = formProvider.tabController.index;
+
     return Row(
       spacing: 15,
       children: [

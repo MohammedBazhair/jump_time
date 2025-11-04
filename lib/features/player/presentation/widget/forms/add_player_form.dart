@@ -10,6 +10,7 @@ import '../../../../notification/presentation/service/notification_service.dart'
 import '../../../domain/entities/player_entity.dart';
 import '../../../domain/entities/playing_method.dart';
 import '../../controller/player_controller.dart';
+import '../inherited_widget/player_controllers_provider.dart';
 import '../keep_screen_switch.dart';
 import 'playing_method_form.dart';
 
@@ -92,42 +93,42 @@ class _AddPlayerFormState extends State<AddPlayerForm>
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: formKey,
-      child: Column(
-        spacing: 10,
-        children: [
-          CustomFormField(
-            controller: playerNameController,
-            hintText: 'اسم اللاعب',
-            validator: (value) {
-              final isEmpty = value?.isEmpty ?? true;
-              return isEmpty ? 'يجب إدخال اسم اللاعب أولا' : null;
-            },
-          ),
-
-          PlayingMethodForm(
-            formKey: formKey,
-            playingMoneyController: playingMoneyController,
-            playingTimeController: playingTimeController,
-            tabController: tabController,
-          ),
-
-          const SizedBox(height: 20),
-
-          SizedBox(
-            width: double.infinity,
-            child: Consumer(
-              builder: (context, ref, child) {
-                return IconedButton(
-                  label: 'ابدأ اللعب',
-                  icon: const Icon(Icons.play_arrow),
-                  onPressed: () => _submitForm(ref),
-                );
+    return PlayerFormProvider(
+      playingMoneyController: playingMoneyController,
+      playingTimeController: playingTimeController,
+      tabController: tabController,
+      child: Form(
+        key: formKey,
+        child: Column(
+          spacing: 10,
+          children: [
+            CustomFormField(
+              controller: playerNameController,
+              hintText: 'اسم اللاعب',
+              validator: (value) {
+                final isEmpty = value?.isEmpty ?? true;
+                return isEmpty ? 'يجب إدخال اسم اللاعب أولا' : null;
               },
             ),
-          ),
-        ],
+
+            const PlayingMethodForm(),
+
+            const SizedBox(height: 20),
+
+            SizedBox(
+              width: double.infinity,
+              child: Consumer(
+                builder: (context, ref, child) {
+                  return IconedButton(
+                    label: 'ابدأ اللعب',
+                    icon: const Icon(Icons.play_arrow),
+                    onPressed: () => _submitForm(ref),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

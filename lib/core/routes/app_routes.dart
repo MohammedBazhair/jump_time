@@ -20,7 +20,10 @@ class AppRoutes {
     },
     ViewRoute.extendTime.routeName: (context) {
       final playerId = ModalRoute.of(context)?.settings.arguments as int;
-      return ExtendTimeScreen(playerId);
+      return PlayerIdProvider(
+        playerId: playerId,
+        child: const ExtendTimeScreen(),
+      );
     },
   };
 }

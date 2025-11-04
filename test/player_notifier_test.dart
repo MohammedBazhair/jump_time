@@ -76,9 +76,9 @@ void main() {
 
       notifier.addPlayer(player);
 
-      final extendParams = TimeExtendParams(minutes: 10, money: null);
+      final extendParams = ExtendTimeParams(playerId: player.id,minutes: 10, money: null);
 
-      notifier.extendPlayerTime(player, extendParams);
+      notifier.extendPlayerTime( extendParams);
 
       final state = container.read(playerProvider);
       final updated = state.players[player.id];

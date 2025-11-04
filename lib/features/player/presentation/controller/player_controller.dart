@@ -59,20 +59,14 @@ class PlayerNotifier extends StateNotifier<PlayerState> {
     if (newPhoto.path == null) return;
 
     final copiedPlayers = {...state.players};
-    copiedPlayers.update(
-      playerId,
-      (p) => p.copyWith(playerPhoto: newPhoto),
-    );
+    copiedPlayers.update(playerId, (p) => p.copyWith(playerPhoto: newPhoto));
 
     state = state.copyWith(players: copiedPlayers);
   }
 
   void changePlayerStatus(int playerId, PlayerStatus newStatus) {
     final copiedPlayers = {...state.players};
-    copiedPlayers.update(
-      playerId,
-      (p) => p.copyWith(playerState: newStatus),
-    );
+    copiedPlayers.update(playerId, (p) => p.copyWith(playerState: newStatus));
 
     state = state.copyWith(players: copiedPlayers);
   }
@@ -97,7 +91,9 @@ class PlayerNotifier extends StateNotifier<PlayerState> {
     return player;
   }
 
-  void extendPlayerTime(PlayerEntity player, TimeExtendParams extendParams) {
+  void extendPlayerTime(ExtendTimeParams extendParams) {
+    final player = state.players[extendParams.playerId];
+    if (player == null) return;
     try {
       final currentRemaining = player.remainigTime ?? Duration.zero;
       final additionalDuration = Duration(minutes: extendParams.minutes ?? 0);

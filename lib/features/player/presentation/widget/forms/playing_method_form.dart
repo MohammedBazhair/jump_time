@@ -5,25 +5,16 @@ import '../../controller/player_controller.dart';
 import '../custom_tab.dart';
 import '../form_fields/money_form_field.dart';
 import '../form_fields/playing_time_form_field.dart';
+import '../inherited_widget/player_controllers_provider.dart';
 
 class PlayingMethodForm extends StatelessWidget {
-  const PlayingMethodForm({
-    super.key,
-    required this.tabController,
-    required this.formKey,
-    required this.playingTimeController,
-    required this.playingMoneyController,
-  });
-
-  final GlobalKey<FormState> formKey;
-  final TabController tabController;
-  final TextEditingController playingTimeController;
-  final TextEditingController playingMoneyController;
-
-  int get currentTab => tabController.index;
+  const PlayingMethodForm({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final formProvider = PlayerFormProvider.of(context);
+    final tabController = formProvider.tabController;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       spacing: 30,
@@ -35,10 +26,10 @@ class PlayingMethodForm extends StatelessWidget {
                 (state) => state.readyPlayer.playingMethod.index,
               ),
             );
-            if (currentTab != tabRecentIndex) {
+            if (tabController.index != tabRecentIndex) {
               tabController.animateTo(tabRecentIndex);
             }
-            
+
             final tabs = PlayingMethod.values
                 .map(
                   (method) => CustomTab(
@@ -61,12 +52,12 @@ class PlayingMethodForm extends StatelessWidget {
           child: TabBarView(
             controller: tabController,
             physics: const NeverScrollableScrollPhysics(),
-            children: [
-              MoneyFormField(playingMoneyController: playingMoneyController, currentTab: currentTab),
+            children: const [
+              MoneyFormField(),
 
-              PlayingTimeFormField(playingTimeController: playingTimeController, currentTab: currentTab),
+              PlayingTimeFormField(),
 
-              const Center(child: Text('تم اختيار مفتوح')),
+              Center(child: Text('تم اختيار مفتوح')),
             ],
           ),
         ),
@@ -74,4 +65,3 @@ class PlayingMethodForm extends StatelessWidget {
     );
   }
 }
-

@@ -8,10 +8,11 @@ import '../../controller/player_controller.dart';
 import '../custom_tab.dart';
 import '../form_fields/money_form_field.dart';
 import '../form_fields/playing_time_form_field.dart';
+import '../inherited_widget/player_controllers_provider.dart';
+import '../inherited_widget/player_id_provider.dart';
 
 class ExtendTimeForm extends StatefulWidget {
-  const ExtendTimeForm(this.playerId, {super.key});
-  final int playerId;
+  const ExtendTimeForm({super.key});
 
   @override
   State<ExtendTimeForm> createState() => _ExtendTimeFormState();
@@ -25,6 +26,7 @@ class _ExtendTimeFormState extends State<ExtendTimeForm>
   final playingMoneyController = TextEditingController();
   PlayingMethod extendMethod = PlayingMethod.money;
   late TabController tabController;
+  late int playerId;
 
   @override
   void initState() {
@@ -33,6 +35,8 @@ class _ExtendTimeFormState extends State<ExtendTimeForm>
       length: PlayingMethod.values.length - 1,
       vsync: this,
     );
+
+    playerId = PlayerIdProvider.of(context).playerId;
   }
 
   @override
@@ -44,84 +48,79 @@ class _ExtendTimeFormState extends State<ExtendTimeForm>
   }
 
   int get currentTab => tabController.index;
-  int get playerId => widget.playerId;
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: formKey,
-      child: Column(
-        spacing: 10,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Builder(
-            builder: (_) {
-              final timeExtendMethods = PlayingMethod.values
-                ..remove(PlayingMethod.unlimited);
+    return PlayerFormProvider(
+      playingMoneyController: playingMoneyController,
+      playingTimeController: playingTimeController,
+      tabController: tabController,
+      child: Form(
+        key: formKey,
+        child: Column(
+          spacing: 10,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Builder(
+              builder: (_) {
+                final timeExtendMethods = PlayingMethod.values
+                  ..remove(PlayingMethod.unlimited);
 
-              final tabs = timeExtendMethods
-                  .map(
-                    (method) => CustomTab(
-                      playingMethod: method,
-                      tabController: tabController,
-                    ),
-                  )
-                  .toList();
+                final tabs = timeExtendMethods
+                    .map(
+                      (method) => CustomTab(
+                        playingMethod: method,
+                        tabController: tabController,
+                      ),
+                    )
+                    .toList();
 
-              return Row(
-                spacing: 10,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: tabs,
-              );
-            },
-          ),
-
-          SizedBox(
-            height: 80,
-            child: TabBarView(
-              controller: tabController,
-              physics: const NeverScrollableScrollPhysics(),
-
-              children: [
-                MoneyFormField(
-                  playingMoneyController: playingMoneyController,
-                  currentTab: currentTab,
-                ),
-
-                PlayingTimeFormField(
-                  playingTimeController: playingTimeController,
-                  currentTab: currentTab,
-                ),
-              ],
+                return Row(
+                  spacing: 10,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: tabs,
+                );
+              },
             ),
-          ),
 
-          Consumer(
-            builder: (context, ref, child) {
-              return IconedButton(
-                onPressed: () {
-                  final isValidForm = formKey.currentState?.validate() ?? false;
+            SizedBox(
+              height: 80,
+              child: TabBarView(
+                controller: tabController,
+                physics: const NeverScrollableScrollPhysics(),
 
-                  if (!isValidForm) return;
+                children: const [MoneyFormField(), PlayingTimeFormField()],
+              ),
+            ),
 
-                  final controller = ref.read(playerProvider.notifier);
-                  final player = ref.read(playerProvider).players[playerId];
-                  if (player == null) return;
+            Consumer(
+              builder: (context, ref, child) {
+                return IconedButton(
+                  onPressed: () {
+                    final isValidForm =
+                        formKey.currentState?.validate() ?? false;
 
-                  final extendParams = TimeExtendParams(
-                    minutes: playingTimeController.text.toInt,
-                    money: playingMoneyController.text.toInt,
-                  );
+                    if (!isValidForm) return;
 
-                  controller.extendPlayerTime(player, extendParams);
-                  
-                },
-                icon: const Icon(Icons.restore_outlined),
-                label: 'تمديد اللعب',
-              );
-            },
-          ),
-        ],
+                    final controller = ref.read(playerProvider.notifier);
+                    final player = ref.read(playerProvider).players[playerId];
+                    if (player == null) return;
+
+                    final extendParams = ExtendTimeParams(
+                      playerId: playerId,
+                      money: playingMoneyController.text.toInt,
+                      minutes: playingTimeController.text.toInt,
+                    );
+
+                    controller.extendPlayerTime(extendParams);
+                  },
+                  icon: const Icon(Icons.restore_outlined),
+                  label: 'تمديد اللعب',
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
