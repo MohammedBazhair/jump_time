@@ -41,7 +41,7 @@ class _PickedPhoto extends StatelessWidget {
 
       child: Image.file(
         File(pickedImagePath),
-        fit: BoxFit.fill,
+        fit: BoxFit.cover,
         errorBuilder: (context, error, stackTrace) => const _FallBackImage(),
       ),
     );

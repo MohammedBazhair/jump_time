@@ -7,7 +7,7 @@ import '../../../player/domain/entities/player_status.dart';
 import '../../../player/domain/entities/playing_method.dart';
 import '../../../player/presentation/controller/player_controller.dart';
 
-class PlayerTimerNotifier extends StateNotifier<Map<int, Timer>> {
+class PlayerTimerNotifier extends StateNotifier<Map<int, Timer?>> {
   PlayerTimerNotifier(this.ref) : super({});
 
   final Ref ref;
@@ -51,10 +51,13 @@ class PlayerTimerNotifier extends StateNotifier<Map<int, Timer>> {
   }
 
   void pauseResumePlayer(int playerId) {
-    final playerTimer = state[playerId];
+    final copiedTimers = {...state};
+    final playerTimer = copiedTimers[playerId];
 
     if (playerTimer?.isActive ?? false) {
       playerTimer?.cancel();
+      copiedTimers[playerId] = null;
+      state = copiedTimers;
       return;
     }
 
@@ -97,16 +100,22 @@ class PlayerTimerNotifier extends StateNotifier<Map<int, Timer>> {
     return Duration(seconds: duration.inSeconds + 1);
   }
 
+  bool? isPlayingPlayer(int playerId) {
+    final isPlaying = state[playerId]?.isActive;
+
+    return isPlaying;
+  }
+
   @override
   void dispose() {
     for (final timer in state.values) {
-      timer.cancel();
+      timer?.cancel();
     }
     super.dispose();
   }
 }
 
 final playerTimerProvider =
-    StateNotifierProvider<PlayerTimerNotifier, Map<int, Timer>>(
+    StateNotifierProvider<PlayerTimerNotifier, Map<int, Timer?>>(
       PlayerTimerNotifier.new,
     );

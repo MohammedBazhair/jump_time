@@ -5,8 +5,9 @@ import '../../../../core/extensions/extensions.dart';
 import '../../../../core/presentation/widget/iconed_button.dart';
 import '../../../../core/routes/app_routes.dart';
 import '../../../game_timer/presentation/controller/player_timer_controller.dart';
+import '../../domain/entities/player_status.dart';
 import '../controller/player_controller.dart';
-import '../widget/player_manage/player_avatar.dart';
+import '../widget/player_manage/player_profile_avatar.dart';
 
 class PlayerManagementScreen extends StatelessWidget {
   const PlayerManagementScreen(this.playerId, {super.key});
@@ -21,27 +22,15 @@ class PlayerManagementScreen extends StatelessWidget {
           children: [
             PlayerProfileAvatar(playerId),
 
-            Consumer(
-              builder: (context, ref, child) {
-                final playerName = ref.watch(
-                  playerProvider.select(
-                    (state) => state.players[playerId]!.name,
-                  ),
-                );
-
-                return Text(
-                  playerName,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                );
-              },
-            ),
+            const SizedBox(height: 30),
 
             Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('الوقت المتبقي'),
+                const Text(
+                  'الوقت المتبقي',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
                 Consumer(
                   builder: (context, ref, child) {
                     final remainingTime = ref.watch(
@@ -67,14 +56,18 @@ class PlayerManagementScreen extends StatelessWidget {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        LinearProgressIndicator(
-                          value: progress.clamp(0.0, 1.0),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: LinearProgressIndicator(
+                            value: progress.clamp(0.0, 1.0),
+                          ),
                         ),
 
                         Text(
                           remainingTime.format,
-                          style: context.textTheme.labelSmall?.copyWith(
+                          style: TextStyle(
                             color: Colors.grey[400],
+                            fontSize: 13,
                           ),
                         ),
                       ],
@@ -83,23 +76,25 @@ class PlayerManagementScreen extends StatelessWidget {
                 ),
               ],
             ),
-
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Consumer(
                   builder: (context, ref, child) {
-                    final isResumed = ref.watch(
-                      playerTimerProvider.select(
-                        (state) => state[playerId]?.isActive,
+                    final isPlaying = ref.watch(
+                      playerProvider.select(
+                        (state) =>
+                            state.players[playerId]?.playerStatus ==
+                            PlayerStatus.playing,
                       ),
                     );
 
-                    if (isResumed == null) return const SizedBox.shrink();
+
 
                     return IconedButton(
-                      label: isResumed ? 'استئناف' : 'ايقاف مؤقت',
-                      icon: Icon(isResumed ? Icons.play_arrow : Icons.pause),
+                      label: isPlaying ? 'ايقاف مؤقت' : 'استئناف',
+                      icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
                       onPressed: () {
                         final controller = ref.read(
                           playerTimerProvider.notifier,
@@ -113,7 +108,15 @@ class PlayerManagementScreen extends StatelessWidget {
 
                 Consumer(
                   builder: (context, ref, child) {
-                    return IconedButton(
+                    final isPlaying = ref.watch(
+                      playerProvider.select(
+                        (state) =>
+                            state.players[playerId]?.playerStatus ==
+                            PlayerStatus.playing,
+                      ),
+                    );
+
+                    final endButton = IconedButton(
                       label: 'إنهاء',
                       icon: const Icon(Icons.close_rounded),
                       onPressed: () {
@@ -124,11 +127,12 @@ class PlayerManagementScreen extends StatelessWidget {
                         controller.stopPlayerTimer(playerId);
                       },
                     );
+                    return isPlaying ? endButton : const SizedBox.shrink();
                   },
                 ),
               ],
             ),
-
+            const SizedBox(height: 20),
             IconedButton(
               label: 'تمديد فترة اللعب',
               icon: const Icon(Icons.restore),

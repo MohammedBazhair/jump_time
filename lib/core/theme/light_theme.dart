@@ -43,7 +43,7 @@ ThemeData lightThemeData() {
       linearTrackColor: const Color(0xFFDBE1E6),
       color: const Color(0xFF111518),
       borderRadius: BorderRadius.circular(30),
-      strokeWidth: 5
+      linearMinHeight: 7,
     ),
 
     inputDecorationTheme: InputDecorationTheme(
