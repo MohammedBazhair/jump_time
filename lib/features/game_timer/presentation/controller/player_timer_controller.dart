@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
+import '../../../../core/extensions/extensions.dart';
 import '../../../player/domain/entities/player_entity.dart';
 import '../../../player/domain/entities/player_status.dart';
 import '../../../player/domain/entities/playing_method.dart';
@@ -13,31 +14,31 @@ class PlayerTimerNotifier extends StateNotifier<Map<int, Timer>> {
   final Ref ref;
 
   void startTimer(PlayerEntity player) {
-    final timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    final timer = Timer.periodic(const Duration(minutes: 1), (timer) {
       final players = ref.read(playerProvider).players;
 
       final currentPlayer = players[player.id] ?? player;
 
-      final remainig = currentPlayer.remainigTime;
+      final remainig = currentPlayer.remainingTime;
       if (currentPlayer.playingMethod != PlayingMethod.unlimited &&
           remainig != null &&
-          remainig.inSeconds <= 0) {
+          remainig.inMinutes <= 0) {
         stopPlayerTimer(player.id);
 
         return;
       }
 
       final updatedPlayer = currentPlayer.copyWith(
-        remainigTime: currentPlayer.playingMethod == PlayingMethod.unlimited
+        remainingTime: currentPlayer.playingMethod == PlayingMethod.unlimited
             ? null
-            : _decreaseSecond(currentPlayer.remainigTime!),
-        elapsedTime: _increaseSecond(currentPlayer.elapsedTime),
+            : currentPlayer.remainingTime!.decreeseMinute(),
+        elapsedTime: currentPlayer.elapsedTime.increeseMinute(),
       );
 
       ref.read(playerProvider.notifier).addPlayer(updatedPlayer);
     });
 
-    final updatedPlayer = player.copyWith(playerState: PlayerStatus.playing);
+    final updatedPlayer = player.copyWith(playerStatus: PlayerStatus.playing);
     ref.read(playerProvider.notifier).addPlayer(updatedPlayer);
 
     final copiedPlayersTimers = {...state};
@@ -87,26 +88,22 @@ class PlayerTimerNotifier extends StateNotifier<Map<int, Timer>> {
         .read(playerProvider.notifier)
         .addPlayer(
           currentPlayer.copyWith(
-            playerState: PlayerStatus.finished,
-            remainigTime: Duration.zero,
+            playerStatus: PlayerStatus.finished,
+            remainingTime: Duration.zero,
           ),
         );
 
     state = copiedTimers;
   }
 
-  Duration _decreaseSecond(Duration duration) {
-    return Duration(seconds: duration.inSeconds - 1);
-  }
+  void deletePlayerTimer(int playerId) {
+    stopPlayerTimer(playerId);
+    final copiedTimers = {...state};
+    copiedTimers[playerId]?.cancel();
 
-  Duration _increaseSecond(Duration duration) {
-    return Duration(seconds: duration.inSeconds + 1);
-  }
+    copiedTimers.remove(playerId);
 
-  bool? isPlayingPlayer(int playerId) {
-    final isPlaying = state[playerId]?.isActive;
-
-    return isPlaying;
+    state = copiedTimers;
   }
 
   @override

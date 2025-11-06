@@ -29,10 +29,12 @@ class PlayerNotifier extends StateNotifier<PlayerState> {
   void startPlaying(PlayerEntity player) {
     addPlayer(player);
 
-    final updatedPlayer = player.copyWith(
-      playingPrice: _calculatePlayingPrice(player),
-      remainigTime: _calculateRemainigTime(player),
-    );
+    final minutePrice = ref.read(minutePriceProvider);
+
+    final updatedPlayer = player
+        .calculateTotalDuration(minutePrice)
+        .calculateRemaining(minutePrice)
+        .calculatePrice(minutePrice);
 
     ref.read(playerTimerProvider.notifier).startTimer(updatedPlayer);
   }
@@ -66,7 +68,7 @@ class PlayerNotifier extends StateNotifier<PlayerState> {
 
   void changePlayerStatus(int playerId, PlayerStatus newStatus) {
     final copiedPlayers = {...state.players};
-    copiedPlayers.update(playerId, (p) => p.copyWith(playerState: newStatus));
+    copiedPlayers.update(playerId, (p) => p.copyWith(playerStatus: newStatus));
 
     state = state.copyWith(players: copiedPlayers);
   }
@@ -82,38 +84,44 @@ class PlayerNotifier extends StateNotifier<PlayerState> {
     state = state.copyWith(readyPlayer: newPlayer);
   }
 
-  PlayerEntity? deletePlayer(int playerId) {
+  void deletePlayer(int playerId) {
     final copiedPlayers = {...state.players};
     final player = copiedPlayers.remove(playerId);
 
+    ref.read(playerTimerProvider.notifier).deletePlayerTimer(playerId);
     state = state.copyWith(players: copiedPlayers);
 
-    return player;
+    final playerName = player?.name ?? '';
+    notificationService.show(
+      SnackBarParams(
+        msg: 'تم حذف اللاعب $playerName',
+        type: MessageType.success,
+      ),
+    );
   }
 
   void extendPlayerTime(ExtendTimeParams extendParams) {
     final player = state.players[extendParams.playerId];
     if (player == null) return;
     try {
-      final currentRemaining = player.remainigTime ?? Duration.zero;
+      final currentRemaining = player.remainingTime ?? Duration.zero;
       final additionalDuration = Duration(minutes: extendParams.minutes ?? 0);
       final newPlayingPrice =
           (player.playingPrice ?? 0) + (extendParams.money ?? 0);
       final totalDuration = player.totalDuration + additionalDuration;
       final newRemaining = currentRemaining + additionalDuration;
 
-      final updatedPlayer = player.copyWith(
-        playingPrice: newPlayingPrice,
-        totalDuration: totalDuration,
-        remainigTime: newRemaining,
-      );
+      final minutePrice = ref.read(minutePriceProvider);
+      final updatedPlayer = player
+          .copyWith(
+            playingPrice: newPlayingPrice,
+            totalDuration: totalDuration,
+            remainingTime: newRemaining,
+          )
+          .calculatePrice(minutePrice)
+          .calculateRemaining(minutePrice);
 
-      addPlayer(
-        updatedPlayer.copyWith(
-          playingPrice: _calculatePlayingPrice(updatedPlayer),
-          remainigTime: _calculateRemainigTime(updatedPlayer),
-        ),
-      );
+      addPlayer(updatedPlayer);
 
       notificationService.show(
         SnackBarParams(
@@ -128,35 +136,6 @@ class PlayerNotifier extends StateNotifier<PlayerState> {
           type: MessageType.error,
         ),
       );
-    }
-  }
-
-  int? _calculatePlayingPrice(PlayerEntity player) {
-    final minutePrice = ref.read(minutePriceProvider);
-    if (player.remainigTime == null &&
-        player.playingMethod != PlayingMethod.money) {
-      return null;
-    }
-    switch (player.playingMethod) {
-      case PlayingMethod.money:
-        return player.playingPrice;
-      case PlayingMethod.time:
-        return player.remainigTime!.inMinutes * minutePrice;
-      case PlayingMethod.unlimited:
-        return null;
-    }
-  }
-
-  Duration? _calculateRemainigTime(PlayerEntity player) {
-    final minutePrice = ref.read(minutePriceProvider);
-
-    switch (player.playingMethod) {
-      case PlayingMethod.money:
-        return Duration(minutes: player.playingPrice! ~/ minutePrice);
-      case PlayingMethod.time:
-        return player.remainigTime;
-      case PlayingMethod.unlimited:
-        return Duration.zero;
     }
   }
 }

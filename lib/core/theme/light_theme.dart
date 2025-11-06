@@ -63,6 +63,8 @@ ThemeData lightThemeData() {
       overlayColor: WidgetStatePropertyAll(Colors.transparent),
     ),
 
+    dividerTheme: const DividerThemeData(space: 0, thickness: 0.4),
+
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: Colors.white,
       unselectedItemColor: Color(0xFF41677F),

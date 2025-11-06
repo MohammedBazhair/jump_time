@@ -13,7 +13,7 @@ class PlayerEntity extends Equatable {
     required this.totalDuration,
     this.elapsedTime = Duration.zero,
     this.playingPrice,
-    this.remainigTime,
+    this.remainingTime,
   });
 
   factory PlayerEntity.empty() {
@@ -33,7 +33,7 @@ class PlayerEntity extends Equatable {
   final PlayingMethod playingMethod;
   final PlayerStatus playerStatus;
   final int? playingPrice;
-  final Duration? remainigTime;
+  final Duration? remainingTime;
   final Duration elapsedTime;
   final Duration totalDuration;
 
@@ -42,9 +42,9 @@ class PlayerEntity extends Equatable {
     String? name,
     PlayerPhoto? playerPhoto,
     PlayingMethod? playingMethod,
-    PlayerStatus? playerState,
+    PlayerStatus? playerStatus,
     int? playingPrice,
-    Duration? remainigTime,
+    Duration? remainingTime,
     Duration? elapsedTime,
     Duration? totalDuration,
   }) {
@@ -53,15 +53,56 @@ class PlayerEntity extends Equatable {
       name: name ?? this.name,
       playerPhoto: playerPhoto ?? this.playerPhoto,
       playingMethod: playingMethod ?? this.playingMethod,
-      playerStatus: playerState ?? playerStatus,
+      playerStatus: playerStatus ?? this.playerStatus,
       playingPrice: playingPrice ?? this.playingPrice,
-      remainigTime: remainigTime ?? this.remainigTime,
+      remainingTime: remainingTime ?? this.remainingTime,
       elapsedTime: elapsedTime ?? this.elapsedTime,
       totalDuration: totalDuration ?? this.totalDuration,
     );
   }
 
+  PlayerEntity calculatePrice(int minutePrice) {
+    if (remainingTime == null && playingMethod != PlayingMethod.money) {
+      return this;
+    }
+    switch (playingMethod) {
+      case PlayingMethod.money:
+        return copyWith(playingPrice: playingPrice);
 
+      case PlayingMethod.time:
+        final totalPrice = remainingTime!.inMinutes * minutePrice;
+        return copyWith(playingPrice: totalPrice);
+
+      case PlayingMethod.unlimited:
+        return this;
+    }
+  }
+
+  PlayerEntity calculateRemaining(int minutePrice) {
+    switch (playingMethod) {
+      case PlayingMethod.money:
+        if (playingPrice == null || playingPrice == 0) return this;
+        final remainig = Duration(minutes: playingPrice! ~/ minutePrice);
+        return copyWith(remainingTime: remainig);
+      case PlayingMethod.time:
+        return this;
+      case PlayingMethod.unlimited:
+        return this;
+    }
+  }
+
+  PlayerEntity calculateTotalDuration(int minutePrice) {
+    switch (playingMethod) {
+      case PlayingMethod.money:
+        final minutes = playingPrice! ~/ minutePrice;
+        final totalDuration = Duration(minutes: minutes);
+        return copyWith(totalDuration: totalDuration);
+      case PlayingMethod.time:
+        return this;
+      case PlayingMethod.unlimited:
+        return this;
+    }
+  }
 
   @override
   String toString() {
@@ -71,7 +112,7 @@ class PlayerEntity extends Equatable {
         'playingMethod: $playingMethod, \n'
         'playerStatus: $playerStatus, \n'
         'playingPrice: $playingPrice, \n'
-        'remainigTime: $remainigTime, \n'
+        'remainigTime: $remainingTime, \n'
         'elapsedTime: $elapsedTime, \n'
         'playerPhoto: $playerPhoto \n'
         ')';

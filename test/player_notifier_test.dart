@@ -69,16 +69,20 @@ void main() {
         playerPhoto: PlayerPhoto.asset(),
         playingMethod: PlayingMethod.time,
         playerStatus: PlayerStatus.playing,
-        remainigTime: const Duration(minutes: 6),
+        remainingTime: const Duration(minutes: 6),
         totalDuration: const Duration(minutes: 8),
         elapsedTime: const Duration(minutes: 2),
       );
 
       notifier.addPlayer(player);
 
-      final extendParams = ExtendTimeParams(playerId: player.id,minutes: 10, money: null);
+      final extendParams = ExtendTimeParams(
+        playerId: player.id,
+        minutes: 10,
+        money: null,
+      );
 
-      notifier.extendPlayerTime( extendParams);
+      notifier.extendPlayerTime(extendParams);
 
       final state = container.read(playerProvider);
       final updated = state.players[player.id];

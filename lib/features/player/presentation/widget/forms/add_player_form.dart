@@ -69,7 +69,7 @@ class _AddPlayerFormState extends State<AddPlayerForm>
       playingMethod: readyPlayer.playingMethod,
       playerStatus: readyPlayer.playerStatus,
       playingPrice: playingMoneyController.text.toInt,
-      remainigTime: remainigTime,
+      remainingTime: remainigTime,
       totalDuration: remainigTime ?? Duration.zero,
     );
 

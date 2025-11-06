@@ -14,7 +14,7 @@ class BuildRemainingTime extends ConsumerWidget {
     final playerId = PlayerIdProvider.of(context).playerId;
     final remainingTime = ref.watch(
       playerProvider.select(
-        (state) => state.players[playerId]?.remainigTime ?? Duration.zero,
+        (state) => state.players[playerId]?.remainingTime ?? Duration.zero,
       ),
     );
     return PlayerRawInfo(label: 'الوقت المتبقي', value: remainingTime.format);

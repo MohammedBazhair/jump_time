@@ -9,3 +9,4 @@ Future<PlayerPhoto> pickCameraImage() async {
 
   return PlayerPhoto(photoSource: PhotoSource.picked, path: pickedFile?.path);
 }
+
