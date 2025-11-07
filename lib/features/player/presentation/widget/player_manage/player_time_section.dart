@@ -10,7 +10,6 @@ class PlayerTimeSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
-    print('rebuild');
     final playerId = PlayerIdProvider.of(context).playerId;
 
     final remainingTime = ref.watch(
