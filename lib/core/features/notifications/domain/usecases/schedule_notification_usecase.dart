@@ -1,8 +1,8 @@
 import '../entities/notification_params.dart';
 import '../repository/notification_repository.dart';
 
-class ScheduleNotificationParams {
-  ScheduleNotificationParams(this._repository);
+class ScheduleNotificationUseCase {
+  ScheduleNotificationUseCase(this._repository);
   final NotificationRepository _repository;
 
   Future<void> call(ScehduledNotificationParams params) {

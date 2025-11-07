@@ -10,7 +10,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
   Future<void> init() => _dataSource.init();
 
   @override
-  Future<void> showInstantNotification(LocalNotificationParams params) {
+  Future<void> showInstantNotification(NotificationParams params) {
     return _dataSource.showInstantNotification(params);
   }
 

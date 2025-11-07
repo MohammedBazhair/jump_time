@@ -35,7 +35,11 @@ class _ExtendTimeFormState extends State<ExtendTimeForm>
       length: PlayingMethod.values.length - 1,
       vsync: this,
     );
+  }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     playerId = PlayerIdProvider.of(context).playerId;
   }
 
@@ -63,8 +67,9 @@ class _ExtendTimeFormState extends State<ExtendTimeForm>
           children: [
             Builder(
               builder: (_) {
-                final timeExtendMethods = PlayingMethod.values
-                  ..remove(PlayingMethod.unlimited);
+                final timeExtendMethods = PlayingMethod.values.where(
+                  (m) => m != PlayingMethod.unlimited,
+                );
 
                 final tabs = timeExtendMethods
                     .map(

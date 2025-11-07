@@ -1,12 +1,15 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:timezone/data/latest.dart';
 import 'package:timezone/timezone.dart';
+import '../../../../../features/notification/presentation/service/notification_service.dart';
+import '../../../../routes/app_routes.dart';
 import '../../constants/notification_channels.dart';
 import '../../domain/entities/notification_params.dart';
 
 abstract class LocalNotificationDataSource {
   Future<void> init();
-  Future<void> showInstantNotification(LocalNotificationParams params);
+  Future<void> showInstantNotification(NotificationParams params);
   Future<void> scheduleNotification(ScehduledNotificationParams params);
 }
 
@@ -17,6 +20,12 @@ class LocalNotificationDataSourceImpl implements LocalNotificationDataSource {
 
   @override
   Future<void> init() async {
+    final status = await Permission.notification.status;
+
+    if (!status.isGranted) {
+      await Permission.notification.request();
+    }
+
     // ✅ تحميل كل بيانات المناطق الزمنية
     initializeTimeZones();
 
@@ -38,7 +47,20 @@ class LocalNotificationDataSourceImpl implements LocalNotificationDataSource {
     );
 
     // ✅ تهيئة مكتبة الإشعارات
-    await _plugin.initialize(initializationSettings);
+    await _plugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: (details) {
+        final payload = details.payload;
+        final navigatorKey = NotificationService().navigatorKey;
+        final id = details.id;
+        if (ViewRoute.playerManagement.routeName == payload) {
+          navigatorKey.currentState?.pushNamed(
+            ViewRoute.playerManagement.routeName,
+            arguments: id ?? 1,
+          );
+        }
+      },
+    );
   }
 
   @override
@@ -67,7 +89,11 @@ class LocalNotificationDataSourceImpl implements LocalNotificationDataSource {
   }
 
   @override
-  Future<void> showInstantNotification(LocalNotificationParams params) async {
+  Future<void> showInstantNotification(NotificationParams params) async {
+    if (await Permission.notification.isPermanentlyDenied) {
+      await openAppSettings();
+    }
+
     const notificationDetails = NotificationDetails(
       android: AndroidNotificationDetails(
         NotificationChannels.instantId,
@@ -83,6 +109,7 @@ class LocalNotificationDataSourceImpl implements LocalNotificationDataSource {
       params.title,
       params.body,
       notificationDetails,
+      payload: params.viewRoute.routeName,
     );
   }
 }

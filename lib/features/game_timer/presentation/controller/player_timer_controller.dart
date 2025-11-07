@@ -1,8 +1,12 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../../../core/extensions/extensions.dart';
+import '../../../../core/features/notifications/domain/entities/notification_params.dart';
+import '../../../../core/features/notifications/domain/usecases/show_notification_usecase.dart';
+import '../../../../core/routes/app_routes.dart';
 import '../../../player/domain/entities/player_entity.dart';
 import '../../../player/domain/entities/player_status.dart';
 import '../../../player/domain/entities/playing_method.dart';
@@ -72,7 +76,7 @@ class PlayerTimerNotifier extends StateNotifier<Map<int, Timer>> {
     startTimer(currentPlayer);
   }
 
-  void stopPlayerTimer(int playerId) {
+  void stopPlayerTimer(int playerId) async {
     final copiedTimers = {...state};
     copiedTimers[playerId]?.cancel();
 
@@ -94,6 +98,15 @@ class PlayerTimerNotifier extends StateNotifier<Map<int, Timer>> {
         );
 
     state = copiedTimers;
+
+    final playerName = currentPlayer.name;
+    final localNotificationParams = NotificationParams(
+      id: currentPlayer.id,
+      title: 'انتهى وقت اللاعب $playerName',
+      body: 'اضغط هنا لفتح تفاصيل اللاعب',
+      viewRoute: ViewRoute.playerManagement
+    );
+    await GetIt.I<ShowNotificationUseCase>()(localNotificationParams);
   }
 
   void deletePlayerTimer(int playerId) {

@@ -5,7 +5,7 @@ class ShowNotificationUseCase {
   ShowNotificationUseCase(this._repository);
   final NotificationRepository _repository;
 
-  Future<void> call(LocalNotificationParams params) {
+  Future<void> call(NotificationParams params) {
     return _repository.showInstantNotification(params);
   }
 }

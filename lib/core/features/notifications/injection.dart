@@ -23,7 +23,13 @@ void setupNotificationLocators() {
     () => NotificationRepositoryImpl(getIt()),
   );
 
-  getIt.registerLazySingleton(() => InitNotificationUsecase(getIt()));
-  getIt.registerLazySingleton(() => ScheduleNotificationParams(getIt()));
-  getIt.registerLazySingleton(() => ShowNotificationUseCase(getIt()));
+  getIt.registerLazySingleton<InitNotificationUsecase>(
+    () => InitNotificationUsecase(getIt()),
+  );
+  getIt.registerLazySingleton<ScheduleNotificationUseCase>(
+    () => ScheduleNotificationUseCase(getIt()),
+  );
+  getIt.registerLazySingleton<ShowNotificationUseCase>(
+    () => ShowNotificationUseCase(getIt()),
+  );
 }
