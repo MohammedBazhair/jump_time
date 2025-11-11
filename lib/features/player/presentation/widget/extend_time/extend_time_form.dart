@@ -62,8 +62,9 @@ class _ExtendTimeFormState extends State<ExtendTimeForm>
       child: Form(
         key: formKey,
         child: Column(
-          spacing: 10,
+          spacing: 30,
           crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Builder(
               builder: (_) {
@@ -118,6 +119,7 @@ class _ExtendTimeFormState extends State<ExtendTimeForm>
                     );
 
                     controller.extendPlayerTime(extendParams);
+                    Navigator.of(context).pop();
                   },
                   icon: const Icon(Icons.restore_outlined),
                   label: 'تمديد اللعب',

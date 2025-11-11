@@ -63,6 +63,8 @@ class PlayerCardHeader extends StatelessWidget {
                         height: 45,
 
                         child: IconedButton(
+                          backgroundColor: const Color(0xFFE7EEF4),
+                          foregroundColor: Colors.black,
                           onPressed: () {},
                           label: playingMethod.label,
                           icon: playingMethod.icon,
