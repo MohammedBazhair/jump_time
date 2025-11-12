@@ -77,7 +77,7 @@ class _ExtendTimeFormState extends State<ExtendTimeForm>
             builder: (_, ref, __) {
               final tabRecentIndex = ref.watch(
                 playerProvider.select(
-                  (state) => state.readyPlayer.playingMethod.index,
+                  (state) => state.readyPlayer.playMode.method.index,
                 ),
               );
               if (currentTab != tabRecentIndex) {

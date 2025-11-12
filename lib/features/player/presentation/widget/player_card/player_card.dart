@@ -19,7 +19,7 @@ class PlayerCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final playingMethod = ref.read(
-      playerProvider.select((state) => state.players[playerId]!.playingMethod),
+      playerProvider.select((state) => state.players[playerId]!.playMode.method),
     );
 
     return PlayerIdProvider(

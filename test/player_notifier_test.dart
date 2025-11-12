@@ -1,12 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:jump_time/features/game_timer/presentation/controller/remainig_time_price.dart';
 import 'package:jump_time/features/notification/domain/entities/message_type.dart';
 import 'package:jump_time/features/notification/domain/entities/snackbar_params.dart';
 import 'package:jump_time/features/notification/presentation/service/notification_service.dart';
-import 'package:jump_time/features/player/domain/entities/player_entity.dart';
-import 'package:jump_time/features/player/domain/entities/player_photo/player_photo.dart';
+import 'package:jump_time/features/player/domain/entities/calculator.dart';
+import 'package:jump_time/features/player/domain/entities/player_entity/player.dart';
+import 'package:jump_time/features/player/domain/entities/player_entity/sub_entity/avatar_photo.dart';
+import 'package:jump_time/features/player/domain/entities/player_entity/sub_entity/play_mode.dart';
 import 'package:jump_time/features/player/domain/entities/player_status.dart';
-import 'package:jump_time/features/player/domain/entities/playing_method.dart';
 import 'package:jump_time/features/player/domain/entities/time_extend_entity.dart';
 import 'package:jump_time/features/player/presentation/controller/player_controller.dart';
 import 'package:mocktail/mocktail.dart';
@@ -63,18 +65,27 @@ void main() {
     // });
 
     test('extendPlayerTime يمدد الوقت ويظهر رسالة نجاح', () {
-      final player = PlayerEntity(
+      final player = Player(
         id: 1,
         name: 'أحمد',
-        playerPhoto: PlayerPhoto.asset(),
-        playingMethod: PlayingMethod.time,
+        avatarPhoto: AssetAvatar(),
+        playMode: TimedPlay(
+          elapsedTime: const Duration(minutes: 2),
+          totalDuration: const Duration(minutes: 8),
+          remainingDuration: const Duration(minutes: 6),
+        ),
         playerStatus: PlayerStatus.playing,
-        remainingTime: const Duration(minutes: 6),
-        totalDuration: const Duration(minutes: 8),
-        elapsedTime: const Duration(minutes: 2),
       );
 
-      notifier.addPlayer(player);
+      final minutePrice = container.read(minutePriceProvider);
+      notifier.addPlayer(
+        player.copyWith(
+          calculator: PlayerCalculator(
+            player: player,
+            minutePrice: minutePrice,
+          ),
+        ),
+      );
 
       final extendParams = ExtendTimeParams(
         playerId: player.id,
@@ -87,7 +98,7 @@ void main() {
       final state = container.read(playerProvider);
       final updated = state.players[player.id];
 
-      expect(updated?.totalDuration, equals(const Duration(minutes: 18)));
+      expect(updated?.totalTime, equals(const Duration(minutes: 18)));
 
       verify(() {
         mockNotification.show(

@@ -2,7 +2,8 @@ enum PlayerStatus {
   playing('يلعب'),
   resumed('متوقف مؤقتا'),
   finished('انتهى'),
-  waiting('ينتظر');
+  waiting('ينتظر'),
+  ready('جاهز');
 
   const PlayerStatus(this.status);
   final String status;

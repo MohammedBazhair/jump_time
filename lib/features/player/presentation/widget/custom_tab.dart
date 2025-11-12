@@ -16,8 +16,8 @@ class CustomTab extends ConsumerWidget {
   final TabController tabController;
   @override
   Widget build(BuildContext context, ref) {
-    final selectedMethod = ref.watch(
-      playerProvider.select((state) => state.readyPlayer.playingMethod),
+    final selectedPlayMode = ref.watch(
+      playerProvider.select((state) => state.readyPlayer.playMode),
     );
 
     final tabIndex = playingMethod.index;
@@ -29,12 +29,12 @@ class CustomTab extends ConsumerWidget {
       onPressed: () {
         tabController.animateTo(tabIndex);
 
-        ref.read(playerProvider.notifier).changePlayingMethod(playingMethod);
+        ref.read(playerProvider.notifier).changePlayingMethod(selectedPlayMode);
       },
-      backgroundColor: selectedMethod == playingMethod
+      backgroundColor: selectedPlayMode.method == playingMethod
           ? null
           : const Color(0xFFE7EEF4).withOpacity(.5),
-      foregroundColor: selectedMethod == playingMethod
+      foregroundColor: selectedPlayMode.method == playingMethod
           ? null
           : const Color(0xFF41677F).withOpacity(0.5),
     );

@@ -1,18 +1,18 @@
-import '../../domain/entities/player_entity.dart';
+import '../../domain/entities/player_entity/player.dart';
 
 class PlayerState {
   PlayerState({required this.readyPlayer, required this.players});
 
   factory PlayerState.empty() {
-    return PlayerState(readyPlayer: PlayerEntity.empty(), players: {});
+    return PlayerState(readyPlayer: Player.empty(), players: {});
   }
 
-  final Map<int,PlayerEntity> players;
-  final PlayerEntity readyPlayer;
+  final Map<int,Player> players;
+  final Player readyPlayer;
 
   PlayerState copyWith({
-    Map<int, PlayerEntity>? players,
-    PlayerEntity? readyPlayer,
+    Map<int, Player>? players,
+    Player? readyPlayer,
   }) {
     return PlayerState(
       players: players ?? this.players,

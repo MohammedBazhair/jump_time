@@ -1,12 +1,12 @@
+import 'dart:io';
+
 import 'package:image_picker/image_picker.dart';
 
-import '../../domain/entities/player_photo/photo_source.dart';
-import '../../domain/entities/player_photo/player_photo.dart';
+import '../../domain/entities/player_entity/sub_entity/avatar_photo.dart';
 
-Future<PlayerPhoto> pickCameraImage() async {
+Future<AvatarPhoto> pickCameraImage() async {
   final imagePicker = ImagePicker();
   final pickedFile = await imagePicker.pickImage(source: ImageSource.camera);
-
-  return PlayerPhoto(photoSource: PhotoSource.picked, path: pickedFile?.path);
+  if (pickedFile == null) return AssetAvatar();
+  return PickedAvatar(file: File(pickedFile.path));
 }
-

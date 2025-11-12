@@ -19,7 +19,7 @@ class PlayerTimeSection extends ConsumerWidget {
     );
     final totalDuration = ref.watch(
       playerProvider.select(
-        (state) => state.players[playerId]?.totalDuration ?? Duration.zero,
+        (state) => state.players[playerId]?.totalTime ?? Duration.zero,
       ),
     );
     final progress = totalDuration.inMinutes <= 0

@@ -3,13 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../../../core/extensions/extensions.dart';
 import '../../../../core/features/notifications/domain/entities/notification_params.dart';
 import '../../../../core/features/notifications/domain/usecases/show_notification_usecase.dart';
 import '../../../../core/routes/app_routes.dart';
-import '../../../player/domain/entities/player_entity.dart';
+import '../../../player/domain/entities/player_entity/player.dart';
 import '../../../player/domain/entities/player_status.dart';
-import '../../../player/domain/entities/playing_method.dart';
 import '../../../player/presentation/controller/player_controller.dart';
 
 class PlayerTimerNotifier extends StateNotifier<Map<int, Timer>> {
@@ -17,27 +15,19 @@ class PlayerTimerNotifier extends StateNotifier<Map<int, Timer>> {
 
   final Ref ref;
 
-  void startTimer(PlayerEntity player) {
+  void startTimer(Player player) {
     final timer = Timer.periodic(const Duration(minutes: 1), (timer) {
       final players = ref.read(playerProvider).players;
 
       final currentPlayer = players[player.id] ?? player;
 
-      final remainig = currentPlayer.remainingTime;
-      if (currentPlayer.playingMethod != PlayingMethod.unlimited &&
-          remainig != null &&
-          remainig.inMinutes <= 0) {
+      if (currentPlayer.canStop) {
         stopPlayerTimer(player.id);
 
         return;
       }
 
-      final updatedPlayer = currentPlayer.copyWith(
-        remainingTime: currentPlayer.playingMethod == PlayingMethod.unlimited
-            ? null
-            : currentPlayer.remainingTime!.decreeseMinute(),
-        elapsedTime: currentPlayer.elapsedTime.increeseMinute(),
-      );
+      final updatedPlayer = currentPlayer.continuePlaying();
 
       ref.read(playerProvider.notifier).addPlayer(updatedPlayer);
     });
@@ -88,14 +78,10 @@ class PlayerTimerNotifier extends StateNotifier<Map<int, Timer>> {
 
     if (currentPlayer == null) return;
 
+    final stoppedPlayer = currentPlayer.zeroRemainingTime();
     ref
         .read(playerProvider.notifier)
-        .addPlayer(
-          currentPlayer.copyWith(
-            playerStatus: PlayerStatus.finished,
-            remainingTime: Duration.zero,
-          ),
-        );
+        .addPlayer(stoppedPlayer.copyWith(playerStatus: PlayerStatus.finished));
 
     state = copiedTimers;
 
@@ -104,7 +90,7 @@ class PlayerTimerNotifier extends StateNotifier<Map<int, Timer>> {
       id: currentPlayer.id,
       title: 'انتهى وقت اللاعب $playerName',
       body: 'اضغط هنا لفتح تفاصيل اللاعب',
-      viewRoute: ViewRoute.playerManagement
+      viewRoute: ViewRoute.playerManagement,
     );
     await GetIt.I<ShowNotificationUseCase>()(localNotificationParams);
   }

@@ -11,7 +11,7 @@ class PlayerPhotoController extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final playerPhoto = ref.watch(
-      playerProvider.select((state) => state.readyPlayer.playerPhoto),
+      playerProvider.select((state) => state.readyPlayer.avatarPhoto),
     );
 
     return Column(

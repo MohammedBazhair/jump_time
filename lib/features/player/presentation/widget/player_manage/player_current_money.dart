@@ -24,7 +24,7 @@ class PlayerCurrentMoney extends ConsumerWidget {
         builder: (_, ref, child) {
           final money = ref.watch(
             playerProvider.select(
-              (state) => state.players[playerId]?.playingPrice,
+              (state) => state.players[playerId]?.playingMoney,
             ),
           );
           return Text.rich(

@@ -3,13 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import '../../../../core/routes/app_routes.dart';
-import '../../domain/entities/player_photo/photo_source.dart';
-import '../../domain/entities/player_photo/player_photo.dart';
+import '../../domain/entities/player_entity/sub_entity/avatar_photo.dart';
 import 'inherited_widget/player_id_provider.dart';
 
 class BuildPlayerPhoto extends StatefulWidget {
   const BuildPlayerPhoto(this.playerPhoto, {super.key});
-  final PlayerPhoto playerPhoto;
+  final AvatarPhoto playerPhoto;
 
   @override
   State<BuildPlayerPhoto> createState() => _BuildPlayerPhotoState();
@@ -19,9 +18,9 @@ class _BuildPlayerPhotoState extends State<BuildPlayerPhoto> {
   bool isHover = false;
   @override
   Widget build(BuildContext context) {
-    final child = switch (widget.playerPhoto.photoSource) {
-      PhotoSource.asset => const _FallBackImage(),
-      PhotoSource.picked => _PickedPhoto(widget.playerPhoto.path!),
+    final child = switch (widget.playerPhoto) {
+      AssetAvatar() => const _FallBackImage(),
+      PickedAvatar(:final file) => _PickedPhoto(file),
     };
     final shadows = [
       const BoxShadow(
@@ -51,9 +50,8 @@ class _BuildPlayerPhotoState extends State<BuildPlayerPhoto> {
         ).pushNamed(ViewRoute.playerManagement.routeName, arguments: playerId);
       },
       child: Transform.scale(
-        scale: isHover? 0.98: 1,
+        scale: isHover ? 0.98 : 1,
         child: Container(
-          
           clipBehavior: Clip.antiAliasWithSaveLayer,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
@@ -75,13 +73,13 @@ class _FallBackImage extends StatelessWidget {
 }
 
 class _PickedPhoto extends StatelessWidget {
-  const _PickedPhoto(this.pickedImagePath);
-  final String pickedImagePath;
+  const _PickedPhoto(this.imageFile);
+  final File imageFile;
 
   @override
   Widget build(BuildContext context) {
     return Image.file(
-      File(pickedImagePath),
+      imageFile,
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) => const _FallBackImage(),
     );

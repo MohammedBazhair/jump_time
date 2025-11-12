@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/presentation/widget/iconed_button.dart';
 import '../../../../../core/routes/app_routes.dart';
-import '../../../domain/entities/player_photo/player_photo.dart';
+import '../../../domain/entities/player_entity/sub_entity/avatar_photo.dart';
 import '../../controller/player_controller.dart';
 import '../build_player_photo.dart';
 import '../inherited_widget/player_id_provider.dart';
@@ -23,8 +23,7 @@ class PlayerCardHeader extends StatelessWidget {
               final playerPhoto = ref.watch(
                 playerProvider.select(
                   (state) =>
-                      state.players[playerId]?.playerPhoto ??
-                      PlayerPhoto.asset(),
+                      state.players[playerId]?.avatarPhoto ?? AssetAvatar(),
                 ),
               );
               return Positioned.fill(child: BuildPlayerPhoto(playerPhoto));
@@ -52,7 +51,7 @@ class PlayerCardHeader extends StatelessWidget {
             builder: (context, ref, child) {
               final playingMethod = ref.watch(
                 playerProvider.select(
-                  (state) => state.players[playerId]?.playingMethod,
+                  (state) => state.players[playerId]?.playMode.method,
                 ),
               );
               return playingMethod != null

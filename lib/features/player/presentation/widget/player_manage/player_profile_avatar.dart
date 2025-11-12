@@ -1,9 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../domain/entities/player_photo/photo_source.dart';
+import '../../../domain/entities/player_entity/sub_entity/avatar_photo.dart';
 import '../../controller/player_controller.dart';
 import '../../helpers/helpers.dart';
 import '../inherited_widget/player_id_provider.dart';
@@ -44,12 +42,12 @@ class PlayerAvatarImage extends ConsumerWidget {
     final playerId = PlayerIdProvider.of(context).playerId;
 
     final playerPhoto = ref.watch(
-      playerProvider.select((state) => state.players[playerId]!.playerPhoto),
+      playerProvider.select((state) => state.players[playerId]!.avatarPhoto),
     );
 
-    final imageProvider = switch (playerPhoto.photoSource) {
-      PhotoSource.asset => Image.asset('assets/images/boy_jumping.jpg').image,
-      PhotoSource.picked => Image.file(File(playerPhoto.path!)).image,
+    final imageProvider = switch (playerPhoto) {
+      AssetAvatar(:final path) => Image.asset(path).image,
+      PickedAvatar(:final file) => Image.file(file).image,
     };
 
     return CircleAvatar(radius: 65, backgroundImage: imageProvider);

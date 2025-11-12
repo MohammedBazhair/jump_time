@@ -17,7 +17,8 @@ class BuildElapsedTime extends StatelessWidget {
       builder: (_, ref, __) {
         final elapsedTime = ref.watch(
           playerProvider.select(
-            (state) => state.players[playerId]?.elapsedTime ?? Duration.zero,
+            (state) =>
+                state.players[playerId]?.playMode.elapsedTime ?? Duration.zero,
           ),
         );
         return PlayerRawInfo(label: 'الوقت المنقضي', value: elapsedTime.format);
