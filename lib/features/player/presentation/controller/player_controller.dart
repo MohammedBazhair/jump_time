@@ -7,10 +7,11 @@ import '../../../notification/domain/entities/message_type.dart';
 import '../../../notification/domain/entities/snackbar_params.dart';
 import '../../../notification/presentation/service/notification_service.dart';
 import '../../domain/entities/calculator.dart';
+import '../../domain/entities/play_mode_adapter.dart';
 import '../../domain/entities/player_entity/player.dart';
 import '../../domain/entities/player_entity/sub_entity/avatar_photo.dart';
-import '../../domain/entities/player_entity/sub_entity/play_mode.dart';
 import '../../domain/entities/player_status.dart';
+import '../../domain/entities/playing_method.dart';
 import '../../domain/entities/time_extend_entity.dart';
 import 'player_state.dart';
 
@@ -41,8 +42,13 @@ class PlayerNotifier extends StateNotifier<PlayerState> {
     ref.read(playerTimerProvider.notifier).startTimer(updatedPlayer);
   }
 
-  void changePlayingMethod(PlayMode playMode) {
-    if (playMode.runtimeType == state.readyPlayer.playMode.runtimeType) return;
+  void changePlayingMethod(
+    PlayingMethod playingMethod,
+    PlayModeAdapter modeAdapter,
+  ) {
+    if (playingMethod == state.readyPlayer.playMode.method) return;
+
+    final playMode = playingMethod.createMode(modeAdapter);
 
     final readyPlayer = state.readyPlayer.copyWith(playMode: playMode);
 

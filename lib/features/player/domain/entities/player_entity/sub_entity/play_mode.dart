@@ -6,6 +6,11 @@ sealed class PlayMode {
   final Duration elapsedTime;
 
   PlayingMethod get method;
+
+   @override
+  String toString() {
+    return 'PlayMode(method: $method, elapsedTime: $elapsedTime)';
+  }
 }
 
 class TimedPlay extends PlayMode {
@@ -32,6 +37,11 @@ class TimedPlay extends PlayMode {
 
   @override
   PlayingMethod get method => PlayingMethod.time;
+
+   @override
+  String toString() {
+    return 'TimedPlay(elapsedTime: $elapsedTime, totalDuration: $totalDuration, remainingDuration: $remainingDuration)';
+  }
 }
 
 class PaidPlay extends PlayMode {
@@ -63,6 +73,11 @@ class PaidPlay extends PlayMode {
 
   @override
   PlayingMethod get method => PlayingMethod.money;
+
+  @override
+  String toString() {
+    return 'PaidPlay(elapsedTime: $elapsedTime, playingMoney: $playingMoney, totalDuration: $totalDuration, remainingDuration: $remainingDuration)';
+  }
 }
 
 class UnlimitedPlay extends PlayMode {
@@ -74,4 +89,9 @@ class UnlimitedPlay extends PlayMode {
 
   @override
   PlayingMethod get method => PlayingMethod.unlimited;
+
+  @override
+  String toString() {
+    return 'UnlimitedPlay(elapsedTime: $elapsedTime)';
+  }
 }

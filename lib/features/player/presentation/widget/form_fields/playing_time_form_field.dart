@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../core/presentation/widget/custom_form_field.dart';
 import '../../validators/validators.dart';
-import '../inherited_widget/player_controllers_provider.dart';
+import '../inherited_widget/player_form_provider.dart';
 
 
 class PlayingTimeFormField extends StatelessWidget {

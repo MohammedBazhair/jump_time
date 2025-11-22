@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:timezone/data/latest.dart';
@@ -105,11 +106,25 @@ class LocalNotificationDataSourceImpl implements LocalNotificationDataSource {
       iOS: DarwinNotificationDetails(),
     );
     await _plugin.show(
-      DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      params.id,
       params.title,
       params.body,
       notificationDetails,
       payload: params.viewRoute.routeName,
     );
+  }
+}
+
+extension on NotificationResponse {
+  void printDetails() {
+    final details = this;
+    debugPrint('===== Notification Response =====');
+    debugPrint('Type: ${details.notificationResponseType}');
+    debugPrint('ID: ${details.id}');
+    debugPrint('Action ID: ${details.actionId}');
+    debugPrint('Input: ${details.input}');
+    debugPrint('Payload: ${details.payload}');
+    debugPrint('Data: ${details.data}');
+    debugPrint('=================================');
   }
 }

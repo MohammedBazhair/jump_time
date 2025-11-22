@@ -5,7 +5,7 @@ import '../../controller/player_controller.dart';
 import '../custom_tab.dart';
 import '../form_fields/money_form_field.dart';
 import '../form_fields/playing_time_form_field.dart';
-import '../inherited_widget/player_controllers_provider.dart';
+import '../inherited_widget/player_form_provider.dart';
 
 class PlayingMethodForm extends StatelessWidget {
   const PlayingMethodForm({super.key});

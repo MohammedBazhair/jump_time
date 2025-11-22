@@ -10,7 +10,7 @@ class AppRoutes {
 
 
 
-  static Map<String, Widget Function(BuildContext)> routes = {
+  static Map<String, WidgetBuilder> routes = {
     ViewRoute.home.routeName: (_) => const HomeLayoutScreen(),
     ViewRoute.addPlayer.routeName: (_) => const AddPlayerScreen(),
     ViewRoute.playerManagement.routeName: (context) {

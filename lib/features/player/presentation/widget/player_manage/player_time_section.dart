@@ -47,7 +47,14 @@ class PlayerTimeSection extends ConsumerWidget {
 
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 15),
-          child: LinearProgressIndicator(value: progress.clamp(0.0, 1.0)),
+          child: TweenAnimationBuilder(
+            tween: Tween(begin: 0.0, end: progress.clamp(0.0, 1.0)),
+            duration: const Duration(milliseconds: 900),
+            curve: Curves.easeInOut,
+            builder: (context, value, child) {
+              return LinearProgressIndicator(value: value);
+            },
+          ),
         ),
         ListTile(
           contentPadding: const EdgeInsets.all(0),

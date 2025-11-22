@@ -6,10 +6,11 @@ import '../../../../../core/presentation/widget/iconed_button.dart';
 import '../../../../notification/domain/entities/message_type.dart';
 import '../../../../notification/domain/entities/snackbar_params.dart';
 import '../../../../notification/presentation/service/notification_service.dart';
+import '../../../domain/entities/play_mode_adapter.dart';
 import '../../../domain/entities/player_entity/player.dart';
 import '../../../domain/entities/playing_method.dart';
 import '../../controller/player_controller.dart';
-import '../inherited_widget/player_controllers_provider.dart';
+import '../inherited_widget/player_form_provider.dart';
 import '../keep_screen_switch.dart';
 import 'playing_method_form.dart';
 
@@ -48,7 +49,9 @@ class _AddPlayerFormState extends State<AddPlayerForm>
     super.dispose();
   }
 
-  void _submitForm(WidgetRef ref) {
+  void _submitForm(WidgetRef ref, PlayModeAdapter adapter) {
+    print('_submitForm');
+
     final isValidForm = formKey.currentState?.validate() ?? false;
 
     if (!isValidForm) return;
@@ -56,15 +59,17 @@ class _AddPlayerFormState extends State<AddPlayerForm>
     final controller = ref.read(playerProvider.notifier);
     final readyPlayer = ref.read(playerProvider).readyPlayer;
 
-
-
+    print('adapter: $adapter');
+    final playMode = readyPlayer.playMode.method.createMode(adapter);
     final player = Player(
       id: IdGenerator.nextId,
       name: playerNameController.text,
       avatarPhoto: readyPlayer.avatarPhoto,
-      playMode: readyPlayer.playMode,
+      playMode: playMode,
       playerStatus: readyPlayer.playerStatus,
     );
+
+    print(player.playMode.toString());
 
     controller.startPlaying(player);
 
@@ -115,7 +120,13 @@ class _AddPlayerFormState extends State<AddPlayerForm>
                   return IconedButton(
                     label: 'ابدأ اللعب',
                     icon: const Icon(Icons.play_arrow),
-                    onPressed: () => _submitForm(ref),
+                    onPressed: () {
+                      final adapter = PlayerFormProvider.of(
+                        context,
+                      ).createAdapter();
+
+                      _submitForm(ref, adapter);
+                    },
                   );
                 },
               ),

@@ -19,13 +19,15 @@ class PlayerCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final playingMethod = ref.read(
-      playerProvider.select((state) => state.players[playerId]!.playMode.method),
+      playerProvider.select(
+        (state) => state.players[playerId]!.playMode.method,
+      ),
     );
 
     return PlayerIdProvider(
       playerId: playerId,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(24), // 👈 القص الخارجي هنا
+        borderRadius: BorderRadius.circular(24),
         child: Dismissible(
           key: ValueKey('player_card_$playerId'),
           background: Container(

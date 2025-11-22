@@ -11,7 +11,7 @@ class Player {
     required this.avatarPhoto,
     required this.playMode,
     required this.playerStatus,
-     this.calculator
+    this.calculator,
   });
 
   factory Player.empty() {
@@ -45,7 +45,7 @@ class Player {
       avatarPhoto: avatarPhoto ?? this.avatarPhoto,
       playMode: playMode ?? this.playMode,
       playerStatus: playerStatus ?? this.playerStatus,
-    calculator: calculator??this.calculator
+      calculator: calculator ?? this.calculator,
     );
   }
 
@@ -65,6 +65,7 @@ class Player {
   Duration? get remainingTime {
     switch (playMode) {
       case final TimedPlay timed:
+        print(timed.remainingDuration);
         return timed.remainingDuration;
 
       case final PaidPlay paid:
@@ -75,10 +76,8 @@ class Player {
     }
   }
 
-  int get playingMoney => calculator?.calculateMoney()??0;
-  Duration get totalTime => calculator?.calculateTotalTime()??Duration.zero;
-    
-  
+  int get playingMoney => calculator?.calculateMoney() ?? 0;
+  Duration get totalTime => calculator?.calculateTotalTime() ?? Duration.zero;
 
   Player continuePlaying() {
     switch (playMode) {
